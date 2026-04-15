@@ -1,0 +1,437 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pink Snake Garden</title>
+  <style>
+    :root {
+      --bg-1: #fff0f7;
+      --bg-2: #ffd9ea;
+      --ink: #5f2847;
+      --ink-soft: #7e4762;
+      --panel: rgba(255, 255, 255, 0.9);
+      --snake: #ff5fa2;
+      --snake-dark: #e33d89;
+      --fruit: #ff8fab;
+      --fruit-leaf: #4caf7f;
+      --grid: #ffc3da;
+      --accent: #fff7fb;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, #ffffff 0, #ffffff 14%, transparent 15%),
+        radial-gradient(circle at 80% 20%, #ffd2e4 0, #ffd2e4 10%, transparent 11%),
+        linear-gradient(160deg, var(--bg-1), var(--bg-2));
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .app {
+      width: min(92vw, 760px);
+      background: var(--panel);
+      border: 4px solid #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 24px 60px rgba(180, 74, 120, 0.18);
+      padding: 24px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--ink-soft);
+      font-size: 0.98rem;
+    }
+
+    .scoreboard {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      background: var(--accent);
+      border: 2px solid #ffc0d8;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 700;
+    }
+
+    .board-wrap {
+      display: grid;
+      grid-template-columns: 1fr 190px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    canvas {
+      width: 100%;
+      max-width: 520px;
+      aspect-ratio: 1 / 1;
+      background:
+        linear-gradient(0deg, transparent 23px, var(--grid) 24px),
+        linear-gradient(90deg, transparent 23px, var(--grid) 24px),
+        #fff7fb;
+      background-size: 24px 24px;
+      border-radius: 24px;
+      border: 4px solid #ffd4e6;
+      justify-self: center;
+    }
+
+    .panel {
+      background: #fff8fc;
+      border: 2px solid #ffd7e8;
+      border-radius: 22px;
+      padding: 18px;
+    }
+
+    .panel h2 {
+      font-size: 1rem;
+      margin-top: 0;
+    }
+
+    .panel p,
+    .panel li {
+      color: var(--ink-soft);
+      line-height: 1.5;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(3, 56px);
+      justify-content: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .controls button,
+    .action-row button,
+    .back-link {
+      border: none;
+      cursor: pointer;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ff94bd, #ff6aa8);
+      color: white;
+      font-weight: 800;
+      box-shadow: 0 10px 22px rgba(255, 95, 162, 0.22);
+    }
+
+    .controls button {
+      width: 56px;
+      height: 56px;
+      font-size: 1.1rem;
+    }
+
+    .controls .blank {
+      visibility: hidden;
+    }
+
+    .action-row {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .action-row button,
+    .back-link {
+      padding: 12px 16px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .message {
+      margin: 14px 0 0;
+      min-height: 1.5em;
+      font-weight: 700;
+      color: var(--snake-dark);
+    }
+
+    @media (max-width: 700px) {
+      .board-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      canvas {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="topbar">
+      <div>
+        <h1>Pink Snake Garden</h1>
+        <p class="subtitle">Use the arrow keys to guide a cute cartoon snake to the fruit.</p>
+      </div>
+      <div class="scoreboard">
+        <div class="pill">Score: <span id="score">0</span></div>
+        <div class="pill">Best: <span id="best">0</span></div>
+      </div>
+    </div>
+
+    <div class="board-wrap">
+      <canvas id="board" width="432" height="432" aria-label="Snake game board"></canvas>
+
+      <aside class="panel">
+        <h2>How to Play</h2>
+        <ul>
+          <li>Arrow keys move the snake.</li>
+          <li>Eat fruit to grow and score points.</li>
+          <li>Avoid the walls and your own tail.</li>
+        </ul>
+        <div class="controls" aria-label="Touch controls">
+          <span class="blank"></span>
+          <button data-dir="up" aria-label="Move up">↑</button>
+          <span class="blank"></span>
+          <button data-dir="left" aria-label="Move left">←</button>
+          <button data-dir="down" aria-label="Move down">↓</button>
+          <button data-dir="right" aria-label="Move right">→</button>
+        </div>
+        <div class="action-row">
+          <button id="restart">Restart</button>
+          <a class="back-link" href="scratch.html">Back to Travel Page</a>
+        </div>
+        <p class="message" id="message">Press any arrow key to start.</p>
+      </aside>
+    </div>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("board");
+    const ctx = canvas.getContext("2d");
+    const scoreEl = document.getElementById("score");
+    const bestEl = document.getElementById("best");
+    const messageEl = document.getElementById("message");
+    const restartButton = document.getElementById("restart");
+    const cellSize = 24;
+    const tileCount = canvas.width / cellSize;
+    const bestKey = "pink-snake-best-score";
+
+    let snake;
+    let direction;
+    let nextDirection;
+    let fruit;
+    let score;
+    let bestScore = Number(localStorage.getItem(bestKey) || 0);
+    let gameOver;
+    let started;
+    let loop;
+
+    bestEl.textContent = bestScore;
+
+    function resetGame() {
+      snake = [
+        { x: 8, y: 9 },
+        { x: 7, y: 9 },
+        { x: 6, y: 9 }
+      ];
+      direction = { x: 1, y: 0 };
+      nextDirection = { x: 1, y: 0 };
+      fruit = placeFruit();
+      score = 0;
+      gameOver = false;
+      started = false;
+      scoreEl.textContent = score;
+      messageEl.textContent = "Press any arrow key to start.";
+      clearInterval(loop);
+      loop = setInterval(tick, 120);
+      draw();
+    }
+
+    function placeFruit() {
+      let newFruit;
+      do {
+        newFruit = {
+          x: Math.floor(Math.random() * tileCount),
+          y: Math.floor(Math.random() * tileCount)
+        };
+      } while (snake && snake.some(segment => segment.x === newFruit.x && segment.y === newFruit.y));
+      return newFruit;
+    }
+
+    function setDirection(dir) {
+      const map = {
+        up: { x: 0, y: -1 },
+        down: { x: 0, y: 1 },
+        left: { x: -1, y: 0 },
+        right: { x: 1, y: 0 }
+      };
+      const candidate = map[dir];
+      if (!candidate) return;
+      if (candidate.x === -direction.x && candidate.y === -direction.y) return;
+      nextDirection = candidate;
+      started = true;
+      if (!gameOver) {
+        messageEl.textContent = "Collect the fruit and keep slithering.";
+      }
+    }
+
+    function tick() {
+      if (gameOver || !started) {
+        draw();
+        return;
+      }
+
+      direction = nextDirection;
+      const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+
+      if (
+        head.x < 0 || head.y < 0 || head.x >= tileCount || head.y >= tileCount ||
+        snake.some(segment => segment.x === head.x && segment.y === head.y)
+      ) {
+        gameOver = true;
+        messageEl.textContent = "Game over. Tap restart for another round.";
+        draw();
+        return;
+      }
+
+      snake.unshift(head);
+
+      if (head.x === fruit.x && head.y === fruit.y) {
+        score += 1;
+        scoreEl.textContent = score;
+        fruit = placeFruit();
+        messageEl.textContent = "Yum. That fruit was adorable.";
+        if (score > bestScore) {
+          bestScore = score;
+          localStorage.setItem(bestKey, String(bestScore));
+          bestEl.textContent = bestScore;
+        }
+      } else {
+        snake.pop();
+      }
+
+      draw();
+    }
+
+    function drawFruit() {
+      const centerX = fruit.x * cellSize + cellSize / 2;
+      const centerY = fruit.y * cellSize + cellSize / 2;
+      ctx.fillStyle = "#4caf7f";
+      ctx.beginPath();
+      ctx.ellipse(centerX + 4, centerY - 9, 5, 3, 0.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = "#ff8fab";
+      ctx.beginPath();
+      ctx.arc(centerX - 4, centerY + 2, 7, 0, Math.PI * 2);
+      ctx.arc(centerX + 4, centerY + 2, 7, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(centerX - 11, centerY + 2);
+      ctx.lineTo(centerX + 11, centerY + 2);
+      ctx.lineTo(centerX, centerY + 13);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawSnake() {
+      snake.slice().reverse().forEach((segment, indexFromTail) => {
+        const isHead = indexFromTail === snake.length - 1;
+        const x = segment.x * cellSize;
+        const y = segment.y * cellSize;
+        ctx.fillStyle = isHead ? "#ff5fa2" : "#ff79b1";
+        roundRect(x + 2, y + 2, cellSize - 4, cellSize - 4, 9);
+        ctx.fill();
+
+        if (isHead) {
+          ctx.fillStyle = "#ffffff";
+          ctx.beginPath();
+          ctx.arc(x + 8, y + 9, 3, 0, Math.PI * 2);
+          ctx.arc(x + 16, y + 9, 3, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#5f2847";
+          ctx.beginPath();
+          ctx.arc(x + 8, y + 9, 1.2, 0, Math.PI * 2);
+          ctx.arc(x + 16, y + 9, 1.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = "#e33d89";
+          ctx.fillRect(x + 10, y + 15, 4, 2);
+        }
+      });
+    }
+
+    function roundRect(x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + width, y, x + width, y + height, radius);
+      ctx.arcTo(x + width, y + height, x, y + height, radius);
+      ctx.arcTo(x, y + height, x, y, radius);
+      ctx.arcTo(x, y, x + width, y, radius);
+      ctx.closePath();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#fff7fb";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.strokeStyle = "#ffd0e2";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= tileCount; i += 1) {
+        const pos = i * cellSize;
+        ctx.beginPath();
+        ctx.moveTo(pos, 0);
+        ctx.lineTo(pos, canvas.height);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, pos);
+        ctx.lineTo(canvas.width, pos);
+        ctx.stroke();
+      }
+
+      drawFruit();
+      drawSnake();
+    }
+
+    document.addEventListener("keydown", event => {
+      const map = {
+        ArrowUp: "up",
+        ArrowDown: "down",
+        ArrowLeft: "left",
+        ArrowRight: "right"
+      };
+      const dir = map[event.key];
+      if (dir) {
+        event.preventDefault();
+        setDirection(dir);
+      }
+    });
+
+    document.querySelectorAll("[data-dir]").forEach(button => {
+      button.addEventListener("click", () => setDirection(button.dataset.dir));
+    });
+
+    restartButton.addEventListener("click", resetGame);
+
+    resetGame();
+  </script>
+</body>
+</html>
