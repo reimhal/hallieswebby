@@ -1,0 +1,18 @@
+﻿<svg width="900" height="700" viewBox="0 0 900 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="900" height="700" rx="42" fill="#FFF8F1"/>
+  <rect x="40" y="40" width="820" height="620" rx="34" fill="#FFF1E8" stroke="#EEC7B4" stroke-width="4" stroke-dasharray="12 10"/>
+  <circle cx="180" cy="170" r="72" fill="#FFD79C"/>
+  <path d="M110 480C180 360 250 360 330 480H110Z" fill="#5B7FA6"/>
+  <path d="M260 500C345 330 445 340 550 500H260Z" fill="#7AA3CC"/>
+  <path d="M470 520C560 360 660 365 780 520H470Z" fill="#4D6D8F"/>
+  <rect x="88" y="508" width="724" height="84" rx="20" fill="#F6D8A8"/>
+  <path d="M604 150C644 105 699 100 741 127C767 145 788 178 814 183C840 188 853 164 857 162C857 204 825 243 782 246C739 249 722 219 690 214C660 209 631 217 604 239V150Z" fill="#FF9BC2"/>
+  <path d="M595 205C611 198 631 199 648 207" stroke="#C84C7B" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="635" cy="181" r="5" fill="#C84C7B"/>
+  <circle cx="657" cy="181" r="5" fill="#C84C7B"/>
+  <path d="M542 191L603 198" stroke="#C84C7B" stroke-width="10" stroke-linecap="round"/>
+  <path d="M744 156L800 138" stroke="#C84C7B" stroke-width="10" stroke-linecap="round"/>
+  <path d="M675 124L680 85" stroke="#C84C7B" stroke-width="8" stroke-linecap="round"/>
+  <text x="86" y="115" fill="#31465F" font-family="Arial, sans-serif" font-size="40" font-weight="700">Wish You Were Here</text>
+  <text x="88" y="620" fill="#31465F" font-family="Arial, sans-serif" font-size="34">Travel inspires curiosity, confidence, and connection.</text>
+</svg>
