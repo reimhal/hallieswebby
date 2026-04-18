@@ -1,4 +1,4 @@
-﻿:root {
+:root {
   --ink: #2d4448;
   --ink-soft: #1a2223;
   --navy: #f5f4ef;
@@ -42,6 +42,12 @@ h1, h2, h3, .navbar-brand {
 .hero-section .btn,
 .hero-section .nav-link {
   color: inherit !important;
+}
+
+.hero-section h1 {
+  max-width: 550px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .eyebrow {
